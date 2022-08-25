@@ -1,0 +1,10 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#changeStep {
+  width: 150px;
+  height: 20px;
+  line-height: 20px;
+}
