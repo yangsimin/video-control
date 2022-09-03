@@ -47,7 +47,7 @@ function mapKey() {
   })
 }
 
-// 控制播放进度
+// 控制播放倍速
 function mapSpeed(keyName, video) {
   const exceptKeys = ['z', 'x', 'c']
   if (exceptKeys.indexOf(keyName) === -1) {
