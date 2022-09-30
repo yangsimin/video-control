@@ -48,6 +48,7 @@ function mapKey() {
 }
 
 // 控制播放倍速
+// todo:
 function mapSpeed(keyName, video) {
   const exceptKeys = ['z', 'x', 'c']
   if (exceptKeys.indexOf(keyName) === -1) {
@@ -61,11 +62,11 @@ function mapSpeed(keyName, video) {
       break
     case 'x':
       playbackRate -= RATE_STEP
-      video.playbackRate = Math.max(playbackRate, MIN_RATE)
+      video.playbackRate = Math.max(playbackRate.toFixed(2), MIN_RATE)
       break
     case 'c':
       playbackRate += RATE_STEP
-      video.playbackRate = playbackRate
+      video.playbackRate = playbackRate.toFixed(2)
       break
   }
   toast.show(`速度：${video.playbackRate.toFixed(2)}x`)
@@ -136,7 +137,6 @@ class Toast {
   // 展示toast
   show(text = '未设置文字', duration = 1000) {
     this.divEl.textContent = text
-    console.log('show')
     this._setVisible(true)
     this.timer = setTimeout(() => {
       this._setVisible(false)
