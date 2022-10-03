@@ -37,14 +37,28 @@ function mapKey() {
   // chrome.storage.sync.get('color', ({ color }) => {
   //   document.body.style.backgroundColor = color
   // })
-  document.addEventListener('keydown', event => {
-    if (!video && !(video = document.querySelector('video'))) {
-      return
+  document.addEventListener(
+    'keydown',
+    event => {
+      if (!video && !(video = document.querySelector('video'))) {
+        return
+      }
+      let ret = false
+      ret |= mapVolume(event.key, video)
+      ret |= mapTime(event.key, video)
+      ret |= mapSpeed(event.key, video)
+
+      if (ret) {
+        // 避免和网站原本的快捷键功能冲突，优先使用我们自定义的
+        event.stopImmediatePropagation()
+      }
+    },
+    {
+      // 在事件捕获阶段执行回调
+      // 这样可以保证回调的优先级，有利于后续阻止其他 handle 执行
+      capture: true,
     }
-    mapVolume(event.key, video)
-    mapTime(event.key, video)
-    mapSpeed(event.key, video)
-  })
+  )
 }
 
 // 控制播放倍速
@@ -70,6 +84,7 @@ function mapSpeed(keyName, video) {
       break
   }
   toast.show(`速度：${video.playbackRate.toFixed(2)}x`)
+  return true
 }
 
 // 控制播放进度
@@ -89,6 +104,7 @@ function mapTime(keyName, video) {
       toast.show(`前进：${TIME_STEP}s`)
       break
   }
+  return true
 }
 
 // 控制音量
@@ -110,6 +126,7 @@ function mapVolume(keyName, video) {
       break
   }
   toast.show(`音量：${(video.volume * 100).toFixed(0)}%`)
+  return true
 }
 
 // 信息提示弹框
