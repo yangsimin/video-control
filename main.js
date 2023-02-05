@@ -1,11 +1,13 @@
 /**
- * h: 后退
- * l: 前进
+ * h/H: 后退
+ * l/L: 前进
  * j: 减小音量
  * k: 增加音量
+ * m: 静音 / 取消静音
  * z: 重置播放倍速
  * x: 减小播放倍速
  * c: 增加播放倍速
+ *  (space): 暂停
  */
 const TOAST_TEXT_COLOR = '#ff5159'
 const TOAST_BACKGROUND = 'rgba(0,0,0,0.9)'
@@ -43,14 +45,17 @@ function mapKey() {
       if (!video && !(video = document.querySelector('video'))) {
         return
       }
+      console.log(event.key)
       let ret = false
       ret |= mapVolume(event.key, video)
       ret |= mapTime(event.key, video)
       ret |= mapSpeed(event.key, video)
+      ret |= mapPause(event.key, video)
 
       if (ret) {
         // 避免和网站原本的快捷键功能冲突，优先使用我们自定义的
         event.stopImmediatePropagation()
+        event.preventDefault()
       }
     },
     {
@@ -89,7 +94,7 @@ function mapSpeed(keyName, video) {
 
 // 控制播放进度
 function mapTime(keyName, video) {
-  const exceptKeys = ['h', 'l']
+  const exceptKeys = ['h', 'l', 'H', 'L']
   if (exceptKeys.indexOf(keyName) === -1) {
     return
   }
@@ -103,13 +108,22 @@ function mapTime(keyName, video) {
       video.currentTime += TIME_STEP
       toast.show(`前进：${TIME_STEP}s`)
       break
+    case 'H':
+      video.currentTime -= TIME_STEP * 2
+      toast.show(`后退：${TIME_STEP * 2}s`)
+      break
+    case 'L':
+      video.currentTime += TIME_STEP * 2
+      toast.show(`前进：${TIME_STEP * 2}s`)
+      break
   }
   return true
 }
 
 // 控制音量
+let lastVolume = -1
 function mapVolume(keyName, video) {
-  const exceptKeys = ['j', 'k']
+  const exceptKeys = ['j', 'k', 'm']
   if (exceptKeys.indexOf(keyName) === -1) {
     return
   }
@@ -124,8 +138,30 @@ function mapVolume(keyName, video) {
       volume += VOLUME_STEP
       video.volume = Math.min(volume, MAX_VOLUME)
       break
+    case 'm':
+      video.muted = !video.muted
   }
   toast.show(`音量：${(video.volume * 100).toFixed(0)}%`)
+  return true
+}
+
+// 暂停 / 播放
+function mapPause(keyName, video) {
+  const exceptKeys = [' ']
+  if (exceptKeys.indexOf(keyName) === -1) {
+    return
+  }
+
+  switch (keyName) {
+    case ' ':
+      if (video.paused) {
+        video.play()
+      } else {
+        video.pause()
+      }
+      toast.show(`${video.paused ? '暂停' : '播放'}`)
+      break
+  }
   return true
 }
 
