@@ -4,10 +4,27 @@
 <head>
   <meta charset="UTF8">
   <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+  <style>
+    .container {
+      padding: 10px;
+      font-size: 1.2em;
+    }
+
+    .enable {
+      display: flex;
+      user-select: none;
+    }
+  </style>
 </head>
 
 <body>
-  <script src="popup.js"></script>
+  <div class="container">
+    <label class="enable">
+      enable:&nbsp;
+      <input type="checkbox">
+    </label>
+  </div>
 </body>
 
 </html>

@@ -28,6 +28,9 @@ const MIN_RATE = 0.1
 
 let video = null
 let toast = null
+
+let enable = false
+
 window.addEventListener('load', () => {
   mapKey()
   toast = new Toast()
@@ -35,17 +38,28 @@ window.addEventListener('load', () => {
 
 // 映射按键
 function mapKey() {
-  // 操作storage的示例代码
-  // chrome.storage.sync.get('color', ({ color }) => {
-  //   document.body.style.backgroundColor = color
-  // })
+  chrome.storage.local
+    .get('enable')
+    .then(({ enable: value }) => (enable = value))
+  chrome.storage.local.onChanged.addListener(value => {
+    enable = value.enable.newValue
+  })
+
   document.addEventListener(
     'keydown',
-    event => {
+    async event => {
+      if (!enable) {
+        return
+      }
+
       if (!video && !(video = document.querySelector('video'))) {
         return
       }
-      console.log(event.key)
+
+      if (event.target.tagName.toLowerCase() === 'input') {
+        return
+      }
+
       let ret = false
       ret |= mapVolume(event.key, video)
       ret |= mapTime(event.key, video)
@@ -152,6 +166,7 @@ function mapPause(keyName, video) {
     return
   }
 
+  console.log('paused?', video.paused, video)
   switch (keyName) {
     case ' ':
       if (video.paused) {
